@@ -216,13 +216,6 @@
     sqs-consumer "^5.4.0"
     sqs-producer "^2.0.2"
 
-"@iwtethys/tethys@^1.1.0":
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/@iwtethys/tethys/-/tethys-1.1.0.tgz#78af8fda2f5c529388a99616af60c3ef720a8f1f"
-  integrity sha512-elF/vclKnl4frZMyOaSkHX0/oq5WvBbct6bb1aDRYqjqDVHQHq+xpANiydwRwhI1P5ul7W5NtNGtFZAlf/2+FA==
-  dependencies:
-    colors "^1.4.0"
-
 "@jest/console@^24.7.1", "@jest/console@^24.9.0":
   version "24.9.0"
   resolved "https://registry.yarnpkg.com/@jest/console/-/console-24.9.0.tgz#79b1bc06fb74a8cfb01cbdedf945584b1b9707f0"
@@ -2602,9 +2595,9 @@ lodash.upperfirst@^4.3.1:
   integrity sha1-E2Xt9DFIBIHvDRxolXpe2Z1J984=
 
 lodash@^4.17.13, lodash@^4.17.15:
-  version "4.17.15"
-  resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.15.tgz#b447f6670a0455bbfeedd11392eff330ea097548"
-  integrity sha512-8xOcRHvCjnocdS5cpwXQXVzmmh5e5+saE2QGoeQmbKmRS6J3VQppPOIt0MnmE+4xlZoumy0GPG0D0MVIQbNA1A==
+  version "4.17.20"
+  resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.20.tgz#b44a9b6297bcb698f1c51a3545a2b3b368d59c52"
+  integrity sha512-PlhdFcillOINfeV7Ni6oF1TAEayyZBoZ8bcshTHqOYJYlrqzRK5hagpagky5o4HfCzzd1TRkXPMFq6cKk9rGmA==
 
 log-symbols@^3.0.0:
   version "3.0.0"
