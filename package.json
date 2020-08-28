@@ -1,0 +1,15 @@
+{
+  "name": "@immowelt/aws-swiss-knife-root",
+  "private": true,
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "cli": "yarn workspace @immowelt/aws-swiss-knife run start",
+    "build:cli": "yarn workspace @immowelt/aws-swiss-knife build"
+  },
+  "version": "1.0.0",
+  "main": "index.js",
+  "author": "Matthias Rohmer <matthias.rohmer@immowelt.de>",
+  "license": "MIT"
+}
