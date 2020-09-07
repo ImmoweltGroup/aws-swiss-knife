@@ -230,9 +230,9 @@ const createChain = <T, K>(
 
 const readAvailableProfiles = (): string[] => {
   // read from default credentials file
-  const credentials = Object.keys(new IniLoader().loadFrom({isConfig: false}))
+  const credentials = Object.keys(new IniLoader().loadFrom({ isConfig: false }))
   // read from default config file
-  const config = Object.keys(new IniLoader().loadFrom({isConfig: true}))
+  const config = Object.keys(new IniLoader().loadFrom({ isConfig: true }))
   // merge arrays and remove duplicates by spreading a set
   return [...new Set([...credentials, ...config])]
 }
