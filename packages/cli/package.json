@@ -1,6 +1,7 @@
 {
   "name": "@immowelt/aws-swiss-knife",
   "version": "1.0.0",
+  "private": false,
   "types": "build/types/types.d.ts",
   "bin": {
     "awsk": "bin/cli"
