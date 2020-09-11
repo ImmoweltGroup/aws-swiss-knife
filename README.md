@@ -1,5 +1,9 @@
 # AWS Swiss Knife
 
+## Work in progress
+
+This repository is work in progress some functions may not work or contain bugs
+
 ## Installation
 
 Install globally using yarn/npm
