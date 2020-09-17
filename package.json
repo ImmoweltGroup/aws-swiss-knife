@@ -9,7 +9,9 @@
     "build:cli": "yarn workspace @immowelt/aws-swiss-knife build",
     "publish:cli": "yarn workspace @immowelt/aws-swiss-knife publish",
     "build:sqs": "yarn workspace @immowelt/awsk-sqs build",
-    "build:dynamodb": "yarn workspace @immowelt/awsk-dynamodb build"
+    "publish:sqs": "yarn workspace @immowelt/awsk-sqs publish",
+    "build:dynamodb": "yarn workspace @immowelt/awsk-dynamodb build",
+    "publish:dynamodb": "yarn workspace @immowelt/awsk-dynamodb publish"
   },
   "version": "1.0.0",
   "main": "index.js",
