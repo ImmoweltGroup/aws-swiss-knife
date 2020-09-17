@@ -5,6 +5,13 @@ import * as deepmerge from 'deepmerge'
 import { map, switchMap } from 'rxjs/operators'
 import { PromptOptions } from 'gluegun/build/types/toolbox/prompt-enquirer-types'
 
+export interface AWSToolboxExtension {
+  credentials: (options?: CredentialOptions) => Observable<Credentials>
+  credentialsChain: (...options: CredentialOptions[]) => Observable<Credentials>
+  region: (options?: RegionOptions) => Observable<string>
+  regionChain: (...options: RegionOptions[]) => Observable<string>
+}
+
 module.exports = (toolbox: GluegunToolbox) => {
   const { parameters, print, prompt } = toolbox
 

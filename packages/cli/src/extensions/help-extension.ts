@@ -1,5 +1,12 @@
 import { GluegunToolbox } from 'gluegun'
 
+export interface HelpToolboxExtension {
+  requested: () => boolean
+  print: (options: HelpOptions) => void
+  getSubCommands: (levelAdjustment?: number) => { [key: string]: string }
+  printNamespaceHelp: (levelAdjustment?: number) => void
+}
+
 module.exports = (toolbox: GluegunToolbox) => {
   const { parameters, print, runtime, command } = toolbox
 
