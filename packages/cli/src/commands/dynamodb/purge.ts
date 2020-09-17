@@ -1,7 +1,7 @@
 import { GluegunCommand, GluegunToolbox } from 'gluegun'
 import { catchError, map, switchMap, tap } from 'rxjs/operators'
 import { combineLatest, iif, Observable, of, OperatorFunction } from 'rxjs'
-import { DynamoDBClient, Table, KeySchema } from '@iwtethys/dynamodb-toolkit'
+import { DynamoDBClient, Table, KeySchema } from '@immowelt/awsk-dynamodb'
 import { mergeObj } from '../../utils/operators'
 import { Credentials } from 'aws-sdk'
 import { HelpOptions } from '../../extensions/help-extension'

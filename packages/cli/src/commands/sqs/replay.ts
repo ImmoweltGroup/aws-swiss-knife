@@ -3,7 +3,7 @@ import { Observable, of } from 'rxjs'
 import { map, switchMap, tap } from 'rxjs/operators'
 import { mergeObj } from '../../utils/operators'
 import { Credentials } from 'aws-sdk'
-import { Queue, redrive } from '@iwtethys/sqs-toolkit'
+import { Queue, redrive } from '@immowelt/awsk-sqs'
 import { HelpOptions } from '../../extensions/help-extension'
 
 const command: GluegunCommand = {

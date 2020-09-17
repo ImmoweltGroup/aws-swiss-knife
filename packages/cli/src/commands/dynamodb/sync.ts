@@ -1,5 +1,5 @@
 import { GluegunCommand, GluegunToolbox } from 'gluegun'
-import { DynamoDBClient, Table } from '@iwtethys/dynamodb-toolkit'
+import { DynamoDBClient, Table } from '@immowelt/awsk-dynamodb'
 import { Observable, of } from 'rxjs'
 import { map, switchMap } from 'rxjs/operators'
 import { mergeObj } from '../../utils/operators'
