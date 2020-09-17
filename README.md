@@ -27,8 +27,12 @@ Every command supports `--help` to get information about arguments & options.
 
 ## Maintainers
 
-* Matthias Rohmer <matthias.rohmer@immowelt.de>
-* Dennis Kribl <dennis.kribl@immowelt.de>
+* [Matthias Rohmer](https://github.com/mrohmer)  
+<matthias.rohmer@immowelt.de>  
+* [Dennis Kribl](https://github.com/denniskribl)  
+<dennis.kribl@immowelt.de>
+* [Thomas Wirth](https://github.com/wtho)  
+<thomas.wirth@immowelt.de>
 
 ## License
 MIT
