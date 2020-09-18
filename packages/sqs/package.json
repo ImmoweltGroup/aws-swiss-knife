@@ -1,0 +1,23 @@
+{
+  "name": "@immowelt/awsk-sqs",
+  "version": "1.0.0",
+  "license": "MIT",
+  "main": "index.js",
+  "dependencies": {
+    "aws-sdk": "^2.704.0",
+    "rxjs": "^6.5.5",
+    "sqs-consumer": "^5.4.0",
+    "sqs-producer": "^2.0.2"
+  },
+  "scripts": {
+    "build": "tsc -p ."
+  },
+  "files": [
+    "tsconfig.json",
+    "tslint.json",
+    "LICENSE",
+    "readme.md",
+    "**/*.d.ts",
+    "**/*.js"
+  ]
+}

@@ -5,7 +5,7 @@ on:
     types: [published]
 
 jobs:
-  build:
+  publish:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v1
@@ -14,7 +14,13 @@ jobs:
           node-version: 12
           registry-url: https://registry.npmjs.org/
       - run: yarn install
-      - run: yarn build:cli
-      - run: yarn publish:cli --access=public --new-version=${{ github.event.release.tag_name }}
+      - run: |
+          yarn build:cli
+          yarn build:sqs
+          yarn build:dynamodb
+      - run: |
+          yarn publish:cli --access=public --new-version=${{ github.event.release.tag_name }}
+          yarn publish:sqs --access=public --new-version=${{ github.event.release.tag_name }}
+          yarn publish:dynamodb --access=public --new-version=${{ github.event.release.tag_name }}
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
