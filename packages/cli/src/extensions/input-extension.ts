@@ -2,6 +2,11 @@ import { GluegunToolbox } from 'gluegun'
 import { from, Observable, of } from 'rxjs'
 import { map } from 'rxjs/operators'
 
+export interface InputToolboxExtension {
+  str: (options: StrOptions) => Observable<string>
+  confirm: (options: ConfirmOptions) => Observable<boolean>
+}
+
 interface Options<T> {
   message: string
   initial?: T
