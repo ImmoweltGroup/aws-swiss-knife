@@ -340,25 +340,6 @@
   resolved "https://registry.yarnpkg.com/@commitlint/types/-/types-11.0.0.tgz#719cf05fcc1abb6533610a2e0f5dd1e61eac14fe"
   integrity sha512-VoNqai1vR5anRF5Tuh/+SWDFk7xi7oMwHrHrbm1BprYXjB2RJsWLhUrStMssDxEl5lW/z3EUdg8RvH/IUBccSQ==
 
-"@iwtethys/dynamodb-toolkit@^1.0.0":
-  version "1.4.1"
-  resolved "https://registry.yarnpkg.com/@iwtethys/dynamodb-toolkit/-/dynamodb-toolkit-1.4.1.tgz#64ec78fd6064f957eac753e435778d9c6c8ac2b2"
-  integrity sha512-dYsHnfTQe0tDB4jMuMOXuPaVy9zYmkLtMSfghMHKevcHCzSCpgVCxFl9IVCvl0vEyaUxsT6VBuOGMn9Ax3v3OA==
-  dependencies:
-    aws-sdk "^2.704.0"
-    copy-dynamodb-table "^2.0.20"
-    rxjs "^6.5.5"
-
-"@iwtethys/sqs-toolkit@^1.0.0":
-  version "1.4.1"
-  resolved "https://registry.yarnpkg.com/@iwtethys/sqs-toolkit/-/sqs-toolkit-1.4.1.tgz#5280fa2efe8b3ad68a2da178771280809d7c216c"
-  integrity sha512-x7i/p59dz/7wHfn2YPV0Du6e1TX9B3N/xFqzDaw7X8s4N8VZ1mxW1DCEMa924LIra7TEihN/n9zw45NVXFzCng==
-  dependencies:
-    aws-sdk "^2.704.0"
-    rxjs "^6.5.5"
-    sqs-consumer "^5.4.0"
-    sqs-producer "^2.0.2"
-
 "@jest/console@^24.7.1", "@jest/console@^24.9.0":
   version "24.9.0"
   resolved "https://registry.yarnpkg.com/@jest/console/-/console-24.9.0.tgz#79b1bc06fb74a8cfb01cbdedf945584b1b9707f0"

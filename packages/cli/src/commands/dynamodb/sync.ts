@@ -1,5 +1,5 @@
 import { GluegunCommand, GluegunToolbox } from 'gluegun'
-import { DynamoDBClient, Table } from '@iwtethys/dynamodb-toolkit'
+import { DynamoDBClient, Table } from '@immowelt/awsk-dynamodb'
 import { Observable, of } from 'rxjs'
 import { map, switchMap } from 'rxjs/operators'
 import { mergeObj } from '../../utils/operators'
@@ -10,7 +10,7 @@ const command: GluegunCommand = {
   name: 'sync',
   alias: 's',
   description: 'Copies all items of one DynamoDB table to another.',
-  run: async toolbox => {
+  run: async (toolbox) => {
     const { help } = toolbox
 
     if (help.requested()) {
@@ -19,7 +19,7 @@ const command: GluegunCommand = {
     await getParameters(toolbox)
       .pipe(switchMap(({ src, dest }) => new DynamoDBClient(src).copyTo(dest)))
       .toPromise()
-  }
+  },
 }
 
 const getParameters = (toolbox: GluegunToolbox): Observable<Paramaters> => {
@@ -33,9 +33,9 @@ const getParameters = (toolbox: GluegunToolbox): Observable<Paramaters> => {
       parameters: {
         accessKeyId: `${optionPrefix}AccessKeyId`,
         secretAccessKey: `${optionPrefix}SecretAccessKey`,
-        profile: `${optionPrefix}Profile`
+        profile: `${optionPrefix}Profile`,
       },
-      labelPrefix
+      labelPrefix,
     }
 
     // 1. check for explicit credentials
@@ -44,10 +44,10 @@ const getParameters = (toolbox: GluegunToolbox): Observable<Paramaters> => {
     return aws.credentialsChain(
       {
         ...options,
-        interactive: false
+        interactive: false,
       },
       {
-        interactive: false
+        interactive: false,
       },
       options
     )
@@ -60,7 +60,7 @@ const getParameters = (toolbox: GluegunToolbox): Observable<Paramaters> => {
     const options = {
       parameter: `${optionPrefix}Region`,
       labelPrefix,
-      defaultValue: 'eu-central-1'
+      defaultValue: 'eu-central-1',
     }
 
     // 1. check for explicit region
@@ -69,10 +69,10 @@ const getParameters = (toolbox: GluegunToolbox): Observable<Paramaters> => {
     return aws.regionChain(
       {
         ...options,
-        interactive: false
+        interactive: false,
       },
       {
-        interactive: false
+        interactive: false,
       },
       options
     )
@@ -85,24 +85,24 @@ const getParameters = (toolbox: GluegunToolbox): Observable<Paramaters> => {
     getCredentials(optionPrefix, labelPrefix).pipe(
       map((credentials: Credentials) => ({
         accessKeyId: credentials.accessKeyId,
-        secretAccessKey: credentials.secretAccessKey
+        secretAccessKey: credentials.secretAccessKey,
       })),
       mergeObj<Table, string>(
         () =>
           input.str({
             argumentName: `${optionPrefix}TableName`,
-            message: `${labelPrefix} Table Name:`
+            message: `${labelPrefix} Table Name:`,
           }),
         (orig, tableName) => ({
           ...orig,
-          tableName
+          tableName,
         })
       ),
       mergeObj<Table, string>(
         () => getRegion(optionPrefix, labelPrefix),
         (orig, region) => ({
           ...orig,
-          region
+          region,
         })
       )
     )
@@ -112,14 +112,14 @@ const getParameters = (toolbox: GluegunToolbox): Observable<Paramaters> => {
       () => getTable('src', 'Source'),
       (orig, src) => ({
         ...orig,
-        src
+        src,
       })
     ),
     mergeObj(
       () => getTable('dest', 'Destination'),
       (orig, dest) => ({
         ...orig,
-        dest
+        dest,
       })
     )
   )
@@ -154,8 +154,8 @@ const buildHelp = (): HelpOptions => ({
       'AWS Secret Access Key to use to authenticate for destination table (overrules --secret-access-key when provided)',
     '--dest-table-name': 'DynamoDB Table to use as destination',
     '--dest-region':
-      'Region of destination DynamoDB table to sync to (overrules --region when provided)'
-  }
+      'Region of destination DynamoDB table to sync to (overrules --region when provided)',
+  },
 })
 
 module.exports = command

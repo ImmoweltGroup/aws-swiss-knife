@@ -1,7 +1,7 @@
 import { GluegunCommand, GluegunToolbox } from 'gluegun'
 import { catchError, map, switchMap, tap } from 'rxjs/operators'
 import { combineLatest, iif, Observable, of, OperatorFunction } from 'rxjs'
-import { DynamoDBClient, Table, KeySchema } from '@iwtethys/dynamodb-toolkit'
+import { DynamoDBClient, Table, KeySchema } from '@immowelt/awsk-dynamodb'
 import { mergeObj } from '../../utils/operators'
 import { Credentials } from 'aws-sdk'
 import { HelpOptions } from '../../extensions/help-extension'
@@ -10,7 +10,7 @@ const command: GluegunCommand = {
   name: 'purge',
   alias: 'p',
   description: 'Purges an DynamoDB table.',
-  run: async toolbox => {
+  run: async (toolbox) => {
     const { print, input, help } = toolbox
     if (help.requested()) {
       return help.print(buildHelp(toolbox))
@@ -22,14 +22,14 @@ const command: GluegunCommand = {
           ({ table }) =>
             input.confirm({
               message: `Proceed deletion of items in table ${table.tableName} (${table.accessKeyId})?`,
-              initial: true
+              initial: true,
             }),
           ({ table, keySchema }) => exec(toolbox, table, keySchema),
           () => of(null).pipe(tap(() => print.info('Cancelled')))
         )
       )
       .toPromise()
-  }
+  },
 }
 
 const exec = (
@@ -42,13 +42,13 @@ const exec = (
 
   return client
     .scanAll({
-      limit: 25
+      limit: 25,
     })
     .pipe(
-      tap(items =>
+      tap((items) =>
         print.info(`Deleting ${items.length} items from ${table.tableName}.`)
       ),
-      switchMap(items => client.deleteAll(items, keySchema))
+      switchMap((items) => client.deleteAll(items, keySchema))
     )
 }
 
@@ -61,27 +61,27 @@ const getParameters = (toolbox: GluegunToolbox): Observable<Parameters> => {
         accessKeyId: credentials.accessKeyId,
         secretAccessKey: credentials.secretAccessKey,
         tableName: null,
-        region: null
+        region: null,
       })),
       mergeObj<Table, string>(
         () =>
           input.str({
             argumentName: 'first',
-            message: 'Table name:'
+            message: 'Table name:',
           }),
         (orig, tableName) => ({
           ...orig,
-          tableName
+          tableName,
         })
       ),
       mergeObj<Table, string>(
         () =>
           aws.region({
-            defaultValue: 'eu-central-1'
+            defaultValue: 'eu-central-1',
           }),
         (orig, region) => ({
           ...orig,
-          region
+          region,
         })
       )
     )
@@ -97,7 +97,7 @@ const getParameters = (toolbox: GluegunToolbox): Observable<Parameters> => {
         return input
           .str({
             argumentName: 'keySchema',
-            message: 'Key schema:'
+            message: 'Key schema:',
           })
           .pipe(
             map((str: string) => JSON.parse(str) as KeySchema)
@@ -114,12 +114,12 @@ const getParameters = (toolbox: GluegunToolbox): Observable<Parameters> => {
         region: table.region,
         tableName: table.tableName,
         secretAccessKey: table.secretAccessKey,
-        accessKeyId: table.accessKeyId
-      }
+        accessKeyId: table.accessKeyId,
+      },
     })),
     mergeObj(getKeySchema, (orig, keySchema) => ({
       ...orig,
-      keySchema
+      keySchema,
     }))
   )
 }
@@ -134,12 +134,12 @@ const confirm = <T, K, R>(
   trueCb: (obj: T) => Observable<K>,
   falseCb: (obj: T) => Observable<R>
 ): OperatorFunction<T, K | R> => {
-  return source =>
+  return (source) =>
     source.pipe(
       switchMap((obj: T) =>
         combineLatest([
           condition(obj).pipe(catchError(() => of(false))),
-          of(obj)
+          of(obj),
         ])
       ),
       switchMap(([res, obj]) => iif(() => res, trueCb(obj), falseCb(obj)))
@@ -155,8 +155,8 @@ const buildHelp = (toolbox: GluegunToolbox): HelpOptions => ({
     '--access-key-id': 'AWS Access Key Id to use to authenticate',
     '--secret-access-key': 'AWS Secret Access Key to use to authenticate',
     '--region': 'Region of DynamoDB table to delete',
-    '--key-schema': 'JSON value representing the schema of the primary index'
-  }
+    '--key-schema': 'JSON value representing the schema of the primary index',
+  },
 })
 
 module.exports = command

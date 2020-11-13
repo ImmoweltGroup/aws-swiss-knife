@@ -3,7 +3,7 @@ import { Observable, of } from 'rxjs'
 import { map, switchMap, tap } from 'rxjs/operators'
 import { mergeObj } from '../../utils/operators'
 import { Credentials } from 'aws-sdk'
-import { Queue, redrive } from '@iwtethys/sqs-toolkit'
+import { Queue, redrive } from '@immowelt/awsk-sqs'
 import { HelpOptions } from '../../extensions/help-extension'
 
 const command: GluegunCommand = {
@@ -11,7 +11,7 @@ const command: GluegunCommand = {
   alias: 'r',
   description:
     'Reads & deletes any message from one queue and adds them to another.',
-  run: async toolbox => {
+  run: async (toolbox) => {
     const { print, help } = toolbox
     if (help.requested()) {
       return help.print(buildHelp())
@@ -19,16 +19,16 @@ const command: GluegunCommand = {
     await getParameters(toolbox)
       .pipe(
         switchMap(({ src, dest }) =>
-          redrive(src, dest, messageId =>
+          redrive(src, dest, (messageId) =>
             print.info(`moved message ${messageId}`)
           )
         ),
-        tap(count =>
+        tap((count) =>
           print.info(`replayed ${count} message${count !== 1 ? 's' : ''}`)
         )
       )
       .toPromise()
-  }
+  },
 }
 
 const getParameters = (toolbox: GluegunToolbox): Observable<Paramaters> => {
@@ -42,9 +42,9 @@ const getParameters = (toolbox: GluegunToolbox): Observable<Paramaters> => {
       parameters: {
         accessKeyId: `${optionPrefix}AccessKeyId`,
         secretAccessKey: `${optionPrefix}SecretAccessKey`,
-        profile: `${optionPrefix}Profile`
+        profile: `${optionPrefix}Profile`,
       },
-      labelPrefix
+      labelPrefix,
     }
 
     // 1. check for explicit credentials
@@ -53,10 +53,10 @@ const getParameters = (toolbox: GluegunToolbox): Observable<Paramaters> => {
     return aws.credentialsChain(
       {
         ...options,
-        interactive: false
+        interactive: false,
       },
       {
-        interactive: false
+        interactive: false,
       },
       options
     )
@@ -69,7 +69,7 @@ const getParameters = (toolbox: GluegunToolbox): Observable<Paramaters> => {
     const options = {
       parameter: `${optionPrefix}Region`,
       labelPrefix,
-      defaultValue: 'eu-central-1'
+      defaultValue: 'eu-central-1',
     }
 
     // 1. check for explicit region
@@ -78,10 +78,10 @@ const getParameters = (toolbox: GluegunToolbox): Observable<Paramaters> => {
     return aws.regionChain(
       {
         ...options,
-        interactive: false
+        interactive: false,
       },
       {
-        interactive: false
+        interactive: false,
       },
       options
     )
@@ -96,24 +96,24 @@ const getParameters = (toolbox: GluegunToolbox): Observable<Paramaters> => {
         accessKeyId: credentials.accessKeyId,
         secretAccessKey: credentials.secretAccessKey,
         endpoint: null,
-        region: null
+        region: null,
       })),
       mergeObj<Queue, string>(
         () =>
           input.str({
             argumentName: `${optionPrefix}Queue`,
-            message: `${labelPrefix} Queue Endpoint:`
+            message: `${labelPrefix} Queue Endpoint:`,
           }),
         (orig, endpoint) => ({
           ...orig,
-          endpoint
+          endpoint,
         })
       ),
       mergeObj<Queue, string>(
         () => getRegion(optionPrefix, labelPrefix),
         (orig, region) => ({
           ...orig,
-          region
+          region,
         })
       )
     )
@@ -123,14 +123,14 @@ const getParameters = (toolbox: GluegunToolbox): Observable<Paramaters> => {
       () => getQueue('src', 'Source'),
       (orig, src) => ({
         ...orig,
-        src
+        src,
       })
     ),
     mergeObj(
       () => getQueue('dest', 'Destination'),
       (orig, dest) => ({
         ...orig,
-        dest
+        dest,
       })
     )
   )
@@ -165,8 +165,8 @@ const buildHelp = (): HelpOptions => ({
       'AWS Secret Access Key to use to authenticate for destination table (overrules --secret-access-key when provided)',
     '--dest-queue': 'Queues URLe to use as destination',
     '--dest-region':
-      'Region of destination Queue to sync to (overrules --region when provided)'
-  }
+      'Region of destination Queue to sync to (overrules --region when provided)',
+  },
 })
 
 module.exports = command
