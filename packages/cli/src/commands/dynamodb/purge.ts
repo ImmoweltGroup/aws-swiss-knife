@@ -94,6 +94,7 @@ const getParameters = (toolbox: GluegunToolbox): Observable<Parameters> => {
     return client.getKeySchema().pipe(
       catchError(() => {
         print.warning('Could not determine key schema.')
+        // tslint:disable-next-line
         return input
           .str({
             argumentName: 'keySchema',
