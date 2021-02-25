@@ -41,7 +41,7 @@
     "copy-dynamodb-table": "^2.0.20",
     "deepmerge": "^4.2.2",
     "gluegun": "latest",
-    "rxjs": "^6.5.5"
+    "rxjs": "^6.6.6"
   },
   "devDependencies": {
     "@types/jest": "^24.0.18",
