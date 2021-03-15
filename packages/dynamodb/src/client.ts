@@ -6,6 +6,7 @@ import { deleteAll } from "./delete";
 import { copy } from "./copy";
 import { describeTable } from "./describe-table";
 import { map } from "rxjs/operators";
+import { listTables } from "./list-tables";
 
 export class DynamoDBClient {
   private readonly dynamoClient: DynamoDB;
@@ -31,6 +32,9 @@ export class DynamoDBClient {
 
   describeTable(): Observable<DynamoDB.DescribeTableOutput> {
     return describeTable(this.dynamoClient, this.table.tableName);
+  }
+  listTables(): Observable<DynamoDB.ListTablesOutput> {
+    return listTables(this.dynamoClient);
   }
 
   getKeySchema(): Observable<KeySchema> {
