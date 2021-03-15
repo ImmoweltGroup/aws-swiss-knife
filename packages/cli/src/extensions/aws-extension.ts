@@ -119,7 +119,7 @@ module.exports = (toolbox: GluegunToolbox) => {
 
   const promptTableName = (
     labelPrefix: string,
-    credentials: Credentials,
+    credentials: Record<'accessKeyId' | 'secretAccessKey', string>,
     region: string
   ): Observable<string> => {
     labelPrefix = labelPrefix ? labelPrefix + ' ' : ''
@@ -271,7 +271,10 @@ interface RegionOptions {
 interface TableNameOptions {
   parameter?: string
   labelPrefix?: string
-  credentials?: Credentials
+  credentials?: {
+    accessKeyId: string
+    secretAccessKey: string
+  }
   region?: string
   interactive?: boolean
 }
