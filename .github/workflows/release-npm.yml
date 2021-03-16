@@ -22,8 +22,8 @@ jobs:
           yarn build:sqs
           yarn build:dynamodb
       - run: |
-          yarn publish:cli --access=public --new-version=${{ github.event.release.tag_name }}
-          yarn publish:sqs --access=public --new-version=${{ github.event.release.tag_name }}
-          yarn publish:dynamodb --access=public --new-version=${{ github.event.release.tag_name }}
+          yarn publish:cli --access=public --new-version=${{ github.event.release.tag_name }} --no-git-tag-version
+          yarn publish:sqs --access=public --new-version=${{ github.event.release.tag_name }} --no-git-tag-version
+          yarn publish:dynamodb --access=public --new-version=${{ github.event.release.tag_name }} --no-git-tag-version
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
