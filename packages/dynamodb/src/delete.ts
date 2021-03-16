@@ -45,7 +45,7 @@ const convertItemToKey = (item: any, keySchema: KeySchema) => {
   Object.keys(keySchema).forEach((keyName) => {
     const type = keySchema[keyName];
     key[keyName] = {};
-    key[keyName][type] = item[keyName];
+    key[keyName][type] = String(item[keyName]);
   });
   return key;
 };
