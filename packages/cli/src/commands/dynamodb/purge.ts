@@ -65,23 +65,27 @@ const getParameters = (toolbox: GluegunToolbox): Observable<Parameters> => {
       })),
       mergeObj<Table, string>(
         () =>
-          input.str({
-            argumentName: 'first',
-            message: 'Table name:',
-          }),
-        (orig, tableName) => ({
-          ...orig,
-          tableName,
-        })
-      ),
-      mergeObj<Table, string>(
-        () =>
           aws.region({
             defaultValue: 'eu-central-1',
           }),
         (orig, region) => ({
           ...orig,
           region,
+        })
+      ),
+      mergeObj<Table, string>(
+        (table) =>
+          aws.tableName({
+            region: table.region,
+            credentials: {
+              accessKeyId: table.accessKeyId,
+              secretAccessKey: table.secretAccessKey,
+            },
+            parameter: `first`,
+          }),
+        (orig, tableName) => ({
+          ...orig,
+          tableName,
         })
       )
     )

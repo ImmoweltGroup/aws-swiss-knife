@@ -23,7 +23,7 @@ const command: GluegunCommand = {
 }
 
 const getParameters = (toolbox: GluegunToolbox): Observable<Paramaters> => {
-  const { aws, input } = toolbox
+  const { aws } = toolbox
 
   const getCredentials = (
     optionPrefix: string,
@@ -88,21 +88,25 @@ const getParameters = (toolbox: GluegunToolbox): Observable<Paramaters> => {
         secretAccessKey: credentials.secretAccessKey,
       })),
       mergeObj<Table, string>(
-        () =>
-          input.str({
-            argumentName: `${optionPrefix}TableName`,
-            message: `${labelPrefix} Table Name:`,
-          }),
-        (orig, tableName) => ({
-          ...orig,
-          tableName,
-        })
-      ),
-      mergeObj<Table, string>(
         () => getRegion(optionPrefix, labelPrefix),
         (orig, region) => ({
           ...orig,
           region,
+        })
+      ),
+      mergeObj<Table, string>(
+        (table) =>
+          aws.tableName({
+            region: table.region,
+            credentials: {
+              accessKeyId: table.accessKeyId,
+              secretAccessKey: table.secretAccessKey,
+            },
+            parameter: `${optionPrefix}TableName`,
+          }),
+        (orig, tableName) => ({
+          ...orig,
+          tableName,
         })
       )
     )

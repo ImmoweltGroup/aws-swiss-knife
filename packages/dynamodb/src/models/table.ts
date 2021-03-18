@@ -1,5 +1,5 @@
 export interface Table {
-  tableName: string;
+  tableName?: string;
   region: string;
   accessKeyId: string;
   secretAccessKey: string;

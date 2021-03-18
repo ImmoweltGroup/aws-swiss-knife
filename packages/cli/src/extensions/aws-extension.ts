@@ -2,19 +2,25 @@ import { GluegunToolbox } from 'gluegun'
 import { combineLatest, from, Observable, of, throwError } from 'rxjs'
 import { Credentials, SharedIniFileCredentials, IniLoader } from 'aws-sdk'
 import * as deepmerge from 'deepmerge'
-import { map, switchMap } from 'rxjs/operators'
+import { catchError, map, switchMap } from 'rxjs/operators'
 import { PromptOptions } from 'gluegun/build/types/toolbox/prompt-enquirer-types'
+import { DynamoDBClient } from '@immowelt/awsk-dynamodb'
 
 export interface AWSToolboxExtension {
   credentials: (options?: CredentialOptions) => Observable<Credentials>
   credentialsChain: (...options: CredentialOptions[]) => Observable<Credentials>
   region: (options?: RegionOptions) => Observable<string>
   regionChain: (...options: RegionOptions[]) => Observable<string>
+  tableName: (options?: TableNameOptions) => Observable<string>
+  tableNameChain: (...options: TableNameOptions[]) => Observable<string>
 }
 
 module.exports = (toolbox: GluegunToolbox) => {
   const { parameters, print, prompt } = toolbox
 
+  const hasArgument = (name: string): boolean =>
+    name in parameters && !!getArgumentValue(name)
+  const getArgumentValue = (name: string): string => parameters[name]
   const hasOption = (name: string): boolean => name in parameters.options
   const getOptionValue = (name: string): string => parameters.options[name]
 
@@ -26,12 +32,12 @@ module.exports = (toolbox: GluegunToolbox) => {
         choices: readAvailableProfiles(),
         message: `Choose ${labelPrefix}AWS Profile`,
         name: 'profile',
-        required: true
+        required: true,
       })
     ).pipe(
-      map(response => response.profile),
-      map(profile => createProfileCredentials(profile)),
-      switchMap(credentials => {
+      map((response) => response.profile),
+      map((profile) => createProfileCredentials(profile)),
+      switchMap((credentials) => {
         if (!areCredentialsValid(credentials)) {
           print.info('Unknown profile')
           return promptProfile(labelPrefix)
@@ -46,21 +52,21 @@ module.exports = (toolbox: GluegunToolbox) => {
     const ask = (options: PromptOptions) => {
       const name =
         typeof options.name === 'function' ? options.name() : options.name
-      return from(prompt.ask(options)).pipe(map(response => response[name]))
+      return from(prompt.ask(options)).pipe(map((response) => response[name]))
     }
     return ask({
       type: 'input',
       name: 'accessKeyId',
-      message: `${labelPrefix}AWS Access Key ID:`
+      message: `${labelPrefix}AWS Access Key ID:`,
     }).pipe(
-      switchMap(accessKeyId =>
+      switchMap((accessKeyId) =>
         combineLatest([
           of(accessKeyId),
           ask({
             type: 'password',
             name: 'secretAccessKey',
-            message: `${labelPrefix}AWS Secret Access Key:`
-          })
+            message: `${labelPrefix}AWS Secret Access Key:`,
+          }),
         ])
       ),
       map(([accessKeyId, secretAccessKey]) =>
@@ -79,11 +85,11 @@ module.exports = (toolbox: GluegunToolbox) => {
         choices: ['profile', 'explicitly'],
         message: `How do you like to enter ${labelPrefix}credentials?`,
         name: 'type',
-        required: true
+        required: true,
       })
     ).pipe(
-      map(response => response.type),
-      switchMap(type => {
+      map((response) => response.type),
+      switchMap((type) => {
         switch (type) {
           case 'profile':
             return promptProfile(labelPrefix)
@@ -106,9 +112,53 @@ module.exports = (toolbox: GluegunToolbox) => {
         type: 'input',
         name: 'region',
         message: `${labelPrefix}AWS Region`,
-        initial: defaultValue
+        initial: defaultValue,
       })
-    ).pipe(map(response => response.region))
+    ).pipe(map((response) => response.region))
+  }
+
+  const promptTableName = (
+    labelPrefix: string,
+    credentials: Record<'accessKeyId' | 'secretAccessKey', string>,
+    region: string
+  ): Observable<string> => {
+    labelPrefix = labelPrefix ? labelPrefix + ' ' : ''
+    const client = new DynamoDBClient({
+      region,
+      accessKeyId: credentials.accessKeyId,
+      secretAccessKey: credentials.secretAccessKey,
+    })
+    return client.listTables().pipe(
+      switchMap((output) => {
+        if (output.TableNames?.length) {
+          return of(output.TableNames as string[])
+        }
+        return throwError('table names empty')
+      }),
+      switchMap((tables: string[]) =>
+        from(
+          prompt.ask({
+            type: 'select',
+            initial: 0,
+            choices: tables,
+            message: `${labelPrefix} Table Name:`,
+            name: 'tablename',
+            required: true,
+          })
+        )
+      ),
+      map((response) => response.tablename)
+    )
+  }
+  const inputTableName = (labelPrefix: string): Observable<string> => {
+    labelPrefix = labelPrefix ? labelPrefix + ' ' : ''
+    return from(
+      prompt.ask({
+        type: 'input',
+        name: 'tablename',
+        message: `${labelPrefix} Table Name`,
+      })
+    ).pipe(map((response) => response.tablename))
   }
 
   const credentials = (
@@ -159,11 +209,46 @@ module.exports = (toolbox: GluegunToolbox) => {
   const regionChain = (...options: RegionOptions[]): Observable<string> =>
     createChain(options, region)
 
+  const tableName = (options?: TableNameOptions): Observable<string> => {
+    options = deepmerge(defaultTableNameOptions, options ?? {})
+
+    if (hasOption(options.parameter)) {
+      return of(getOptionValue(options.parameter))
+    }
+    if (hasArgument(options.parameter)) {
+      return of(getArgumentValue(options.parameter))
+    }
+
+    if (!options.interactive) {
+      return of(null)
+    }
+
+    if ('credentials' in options && 'region' in options) {
+      return promptTableName(
+        options.labelPrefix,
+        options.credentials,
+        options.region
+      ).pipe(
+        catchError(() => {
+          print.warning(`Could not automatically read table names.`)
+
+          return inputTableName(options.labelPrefix)
+        })
+      )
+    }
+
+    return inputTableName(options.labelPrefix)
+  }
+  const tableNameChain = (...options: TableNameOptions[]): Observable<string> =>
+    createChain(options, tableName)
+
   toolbox.aws = {
     credentials,
     credentialsChain,
     region,
-    regionChain
+    regionChain,
+    tableName,
+    tableNameChain,
   }
 }
 
@@ -183,18 +268,33 @@ interface RegionOptions {
   defaultValue?: string
 }
 
+interface TableNameOptions {
+  parameter?: string
+  labelPrefix?: string
+  credentials?: {
+    accessKeyId: string
+    secretAccessKey: string
+  }
+  region?: string
+  interactive?: boolean
+}
+
 const defaultCredentialOptions: CredentialOptions = {
   parameters: {
     accessKeyId: 'accessKeyId',
     secretAccessKey: 'secretAccessKey',
-    profile: 'profile'
+    profile: 'profile',
   },
-  interactive: true
+  interactive: true,
 }
 const defaultRegionOptions: RegionOptions = {
   parameter: 'region',
   labelPrefix: '',
-  interactive: true
+  interactive: true,
+}
+const defaultTableNameOptions: TableNameOptions = {
+  labelPrefix: '',
+  interactive: true,
 }
 
 const createProfileCredentials = (profileName: string): Credentials => {
@@ -206,7 +306,7 @@ const createExplicitCredentials = (
 ): Credentials => {
   return new Credentials({
     accessKeyId,
-    secretAccessKey
+    secretAccessKey,
   })
 }
 const areCredentialsValid = (credentials: Credentials): boolean =>
@@ -219,7 +319,7 @@ const createChain = <T, K>(
   let obs = of(null)
 
   // rx recursion - open for better approaches
-  options.forEach(option => {
+  options.forEach((option) => {
     obs = obs.pipe(
       switchMap((res: K) => {
         if (res) {
