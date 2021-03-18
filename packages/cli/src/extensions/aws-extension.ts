@@ -210,7 +210,7 @@ module.exports = (toolbox: GluegunToolbox) => {
     createChain(options, region)
 
   const tableName = (options?: TableNameOptions): Observable<string> => {
-    options = deepmerge(defaultTableNameOptions, options || {})
+    options = deepmerge(defaultTableNameOptions, options ?? {})
 
     if (hasOption(options.parameter)) {
       return of(getOptionValue(options.parameter))
