@@ -36,7 +36,7 @@
   "dependencies": {
     "@immowelt/awsk-dynamodb": "^1.0.0",
     "@immowelt/awsk-sqs": "^1.0.0",
-    "aws-sdk": "^2.704.0",
+    "aws-sdk": "^2.929.0",
     "colors": "^1.4.0",
     "copy-dynamodb-table": "^2.0.20",
     "deepmerge": "^4.2.2",
